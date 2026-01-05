@@ -1,0 +1,17 @@
+[Unit]
+Description=Keryx Discord Bot
+After=network.target
+
+[Service]
+# REPLACE 'YOUR_USER' WITH YOUR ACTUAL LINUX USERNAME
+User=YOUR_USER
+Group=YOUR_USER
+
+# REPLACE PATHS BELOW TO MATCH YOUR INSTALL LOCATION
+WorkingDirectory=/home/YOUR_USER/Project-Keryx
+ExecStart=/home/YOUR_USER/Project-Keryx/venv/bin/python main.py
+
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
