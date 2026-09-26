@@ -10,3 +10,8 @@ venv/
 
 # Ignore system logs if any
 *.log
+
+# Ignore Keryx AI Lite's local quota database
+keryx_ai_usage.db
+keryx_ai_usage.db-shm
+keryx_ai_usage.db-wal
