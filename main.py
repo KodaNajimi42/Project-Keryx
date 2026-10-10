@@ -37,7 +37,7 @@ AI_USAGE_DATABASE = os.getenv('AI_USAGE_DATABASE', 'keryx_ai_usage.db').strip()
 AI_USAGE_RETENTION_DAYS = int(os.getenv('AI_USAGE_RETENTION_DAYS', '30'))
 AI_PERSONALITY_FILE = os.getenv('AI_PERSONALITY_FILE', 'keryx_personality.txt').strip()
 KERYX_NAME = "Keryx"
-KERYX_VERSION = "2.0.0"
+KERYX_VERSION = "2.0.1"
 KERYX_BIRTHDAY = "October 10, 2026 at 2:07:32 AM Eastern Daylight Time"
 
 # Parse the comma-separated list of roles to remove for soft jail
