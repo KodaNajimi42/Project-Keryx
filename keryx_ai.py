@@ -1,7 +1,7 @@
 import sqlite3
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 
@@ -16,10 +16,12 @@ class UsageDecision:
 class DailyUsageLimiter:
     """Persistent per-user daily quotas with in-memory cooldowns."""
 
-    def __init__(self, database_path: str):
+    def __init__(self, database_path: str, retention_days: int = 30):
         self.database_path = Path(database_path)
+        self.retention_days = retention_days
         self._last_request: dict[int, float] = {}
         self._initialize_database()
+        self.delete_expired_usage()
 
     def _connect(self):
         return sqlite3.connect(self.database_path)
@@ -90,6 +92,16 @@ class DailyUsageLimiter:
                 WHERE usage_date = ? AND user_id = ?
                 """,
                 (usage_date, user_id),
+            )
+
+    def delete_expired_usage(self, *, today=None):
+        """Delete quota counters older than the configured retention period."""
+        today = today or datetime.now(timezone.utc).date()
+        cutoff = (today - timedelta(days=self.retention_days)).isoformat()
+        with self._connect() as connection:
+            connection.execute(
+                "DELETE FROM ai_usage WHERE usage_date < ?",
+                (cutoff,),
             )
 
 

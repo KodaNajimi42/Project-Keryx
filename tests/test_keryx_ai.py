@@ -1,5 +1,6 @@
 import tempfile
 import unittest
+from datetime import date
 from pathlib import Path
 
 from keryx_ai import DailyUsageLimiter, split_discord_message
@@ -40,6 +41,12 @@ class DailyUsageLimiterTests(unittest.TestCase):
         self.limiter.acquire(42, 1, 0, now=100, usage_date="2026-09-26")
         self.limiter.refund(42, usage_date="2026-09-26")
         retry = self.limiter.acquire(42, 1, 0, now=101, usage_date="2026-09-26")
+        self.assertTrue(retry.allowed)
+
+    def test_deletes_expired_usage(self):
+        self.limiter.acquire(42, 1, 0, now=100, usage_date="2026-08-01")
+        self.limiter.delete_expired_usage(today=date(2026, 9, 26))
+        retry = self.limiter.acquire(42, 1, 0, now=101, usage_date="2026-08-01")
         self.assertTrue(retry.allowed)
 
 

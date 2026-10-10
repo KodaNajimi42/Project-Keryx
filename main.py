@@ -34,7 +34,11 @@ AI_DAILY_LIMIT = int(os.getenv('AI_DAILY_LIMIT', '10'))
 AI_COOLDOWN_SECONDS = int(os.getenv('AI_COOLDOWN_SECONDS', '60'))
 AI_MAX_OUTPUT_TOKENS = int(os.getenv('AI_MAX_OUTPUT_TOKENS', '800'))
 AI_USAGE_DATABASE = os.getenv('AI_USAGE_DATABASE', 'keryx_ai_usage.db').strip()
+AI_USAGE_RETENTION_DAYS = int(os.getenv('AI_USAGE_RETENTION_DAYS', '30'))
 AI_PERSONALITY_FILE = os.getenv('AI_PERSONALITY_FILE', 'keryx_personality.txt').strip()
+KERYX_NAME = "Keryx"
+KERYX_VERSION = "2.0.0"
+KERYX_BIRTHDAY = "October 10, 2026 at 2:07:32 AM Eastern Daylight Time"
 
 # Parse the comma-separated list of roles to remove for soft jail
 soft_jail_roles_raw = os.getenv('SOFT_JAIL_REMOVE_ROLES', '')
@@ -49,7 +53,7 @@ ai_provider = create_ai_provider(
     compatible_api_key=AI_API_KEY,
     compatible_base_url=AI_BASE_URL,
 )
-ai_usage = DailyUsageLimiter(AI_USAGE_DATABASE)
+ai_usage = DailyUsageLimiter(AI_USAGE_DATABASE, AI_USAGE_RETENTION_DAYS)
 
 try:
     with open(AI_PERSONALITY_FILE, encoding='utf-8') as personality_file:
@@ -62,6 +66,12 @@ AI_SAFETY_INSTRUCTIONS = (
     "Discord state. You have no tools or authority. Do not generate mass mentions. "
     "Protect private information. If a request is unsafe or inappropriate, briefly "
     "refuse and offer a safer alternative."
+)
+AI_RUNTIME_IDENTITY = (
+    f"Your name is {KERYX_NAME}. You are running Keryx AI Lite version "
+    f"{KERYX_VERSION}. Your current AI provider is {AI_PROVIDER}, and your "
+    f"underlying model identifier is {AI_MODEL}. Your birthday is {KERYX_BIRTHDAY}, "
+    f"the moment version 2.0 was published on GitHub. State these accurately if asked."
 )
 
 class Client(commands.Bot):
@@ -230,7 +240,10 @@ async def ask(interaction: discord.Interaction, question: str):
         answer = await ai_provider.generate_text(
             model=AI_MODEL,
             prompt=question,
-            instructions=f"{AI_PERSONALITY}\n\n{AI_SAFETY_INSTRUCTIONS}",
+            instructions=(
+                f"{AI_PERSONALITY}\n\n{AI_RUNTIME_IDENTITY}\n\n"
+                f"{AI_SAFETY_INSTRUCTIONS}"
+            ),
             max_output_tokens=AI_MAX_OUTPUT_TOKENS,
         )
         chunks = split_discord_message(answer)
@@ -239,7 +252,7 @@ async def ask(interaction: discord.Interaction, question: str):
 
         allowed_mentions = discord.AllowedMentions.none()
         await interaction.followup.send(
-            f"**Keryx AI Lite** • {interaction.user.display_name}\n{chunks[0]}",
+            f"**{KERYX_NAME}** • {interaction.user.display_name}\n{chunks[0]}",
             allowed_mentions=allowed_mentions,
         )
         for chunk in chunks[1:]:

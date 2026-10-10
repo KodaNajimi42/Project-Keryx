@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Privacy Policy for the Keryx Discord bot.">
+  <title>Privacy Policy · Keryx</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="eyebrow">Keryx AI Lite</div>
+    <h1>Privacy Policy</h1>
+    <nav aria-label="Policy navigation"><a href="index.html">Overview</a><a href="terms.html">Terms of Service</a></nav>
+  </header>
+  <main>
+    <p class="updated"><strong>Effective:</strong> October 10, 2026</p>
+    <p>This Policy explains how Keryx processes information when providing Discord moderation, modmail, honeypot, role-management, and AI-assistance features.</p>
+
+    <h2>1. Information Keryx processes</h2>
+    <ul>
+      <li><strong>Discord identifiers:</strong> user, server, channel, role, and message IDs, plus usernames and display names needed to operate commands and logs.</li>
+      <li><strong>Modmail:</strong> messages and attachment links sent to Keryx by direct message, along with staff replies and the associated user ID.</li>
+      <li><strong>Moderation events:</strong> command actors and targets, roles changed, audit reasons, and errors needed to perform and diagnose moderation actions.</li>
+      <li><strong>Honeypot events:</strong> the triggering user, message content, channel and message IDs, ban reason, and whether an appeal notice was delivered.</li>
+      <li><strong>AI interactions:</strong> the user’s question, the generated answer, user ID, selected provider and model, and remaining daily allowance.</li>
+      <li><strong>Quota records:</strong> user ID, UTC date, and request count stored locally to enforce daily AI limits.</li>
+      <li><strong>Technical logs:</strong> service status and error details. Secrets are not intentionally written to logs.</li>
+    </ul>
+
+    <h2>2. Why this information is used</h2>
+    <p>Keryx uses this information to deliver requested features, relay modmail, enforce server safety settings, prevent abuse, apply usage limits, provide staff accountability, diagnose failures, and maintain the security and reliability of the bot.</p>
+
+    <h2>3. AI provider processing</h2>
+    <p>When you use <code>/ask</code>, your question and Keryx’s system instructions are sent to the AI provider configured by the operator. The current default is Google’s Gemini API using <code>gemini-3.1-flash-lite</code>. Generated answers are returned to Discord and may be copied to a private staff log channel.</p>
+    <p>Providers process data under their own terms and privacy policies. On Gemini’s free API tier, Google states that submitted content may be used to improve its products. Do not submit confidential staff discussions, credentials, private modmail, or sensitive personal information to <code>/ask</code>.</p>
+
+    <h2>4. When information is shared</h2>
+    <p>Keryx does not sell personal information. Information is disclosed only as needed to:</p>
+    <ul>
+      <li>operate through Discord and the bot’s hosting provider;</li>
+      <li>send AI requests to the configured AI provider;</li>
+      <li>show authorized server staff the modmail, moderation, honeypot, and AI logs needed to administer their community;</li>
+      <li>comply with applicable law, protect rights and safety, or investigate abuse.</li>
+    </ul>
+
+    <h2>5. Retention</h2>
+    <ul>
+      <li>Local AI quota counters are automatically deleted after the configured retention period, which defaults to 30 days.</li>
+      <li>Modmail channels and staff log messages remain in Discord until authorized staff delete them or Discord removes them under its own policies.</li>
+      <li>Service logs remain according to the host’s logging configuration and may be rotated automatically.</li>
+      <li>Third-party providers apply their own retention rules to information they process.</li>
+    </ul>
+
+    <h2>6. Security</h2>
+    <p>Keryx limits sensitive configuration to environment variables, restricts operational logs to designated channels, suppresses generated mass mentions, and gives AI providers no Discord moderation tools. No security measure is perfect, and absolute security cannot be guaranteed.</p>
+
+    <h2>7. Your choices and requests</h2>
+    <p>You may avoid AI processing by not using <code>/ask</code>. You may ask relevant server staff to review or delete modmail and bot-generated staff logs when appropriate. Some information may need to be retained temporarily for security, dispute resolution, legal compliance, or enforcement of server rules.</p>
+
+    <h2>8. Children’s privacy</h2>
+    <p>Keryx is intended for use within Discord communities and is not designed to knowingly collect information from anyone who is not permitted to use Discord. Users must meet Discord’s applicable minimum-age requirements.</p>
+
+    <h2>9. Policy changes</h2>
+    <p>This Policy may change as Keryx gains or removes features. The effective date above will be revised when material updates are published.</p>
+
+    <h2>10. Contact</h2>
+    <p>For privacy or deletion requests, contact the relevant server’s staff through Keryx modmail. For project-level questions, use the <a href="https://github.com/KodaNajimi42/Project-Keryx/issues">GitHub issue tracker</a>. Do not place sensitive personal information in a public GitHub issue.</p>
+  </main>
+  <footer>© 2026 Project Keryx · <a href="terms.html">Terms of Service</a></footer>
+</body>
+</html>

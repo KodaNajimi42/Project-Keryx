@@ -79,7 +79,7 @@ pip install -r requirements.txt
 sudo systemctl restart keryx
 ```
 
-AI usage is stored in `keryx_ai_usage.db`, so daily quotas survive restarts. Requests reset by UTC date. Free-tier Gemini prompts and responses may be used by Google to improve its products; do not send private modmail, staff discussions, credentials, or personal information through `/ask`.
+AI usage is stored in `keryx_ai_usage.db`, so daily quotas survive restarts. Requests reset by UTC date, and counters older than `AI_USAGE_RETENTION_DAYS` are deleted automatically. Free-tier Gemini prompts and responses may be used by Google to improve its products; do not send private modmail, staff discussions, credentials, or personal information through `/ask`.
 
 ### Providers and models
 
@@ -111,6 +111,11 @@ Edit `keryx_personality.txt` to change Keryx's tone and character, then restart 
 ## Credits
 
 Project Keryx is created and maintained by [KodaNajimi42](https://github.com/KodaNajimi42). Development and documentation were assisted by Google Gemini and OpenAI Codex.
+
+## Legal
+
+- [Terms of Service](https://kodanajimi42.github.io/Project-Keryx/terms.html)
+- [Privacy Policy](https://kodanajimi42.github.io/Project-Keryx/privacy.html)
 
 ## License
 
