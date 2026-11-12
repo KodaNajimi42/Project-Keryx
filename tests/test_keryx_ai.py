@@ -10,7 +10,9 @@ class DailyUsageLimiterTests(unittest.TestCase):
     def setUp(self):
         self.temp_directory = tempfile.TemporaryDirectory()
         database = Path(self.temp_directory.name) / "usage.db"
-        self.limiter = DailyUsageLimiter(str(database))
+        # Most quota tests use historical fixed dates, so keep their fixture beyond
+        # the cleanup window. The cleanup behavior has its own focused test below.
+        self.limiter = DailyUsageLimiter(str(database), retention_days=3650)
 
     def tearDown(self):
         self.temp_directory.cleanup()
@@ -32,7 +34,9 @@ class DailyUsageLimiterTests(unittest.TestCase):
             self.limiter.acquire(42, 2, 0, now=101, usage_date="2026-09-26").allowed
         )
 
-        restarted = DailyUsageLimiter(str(self.limiter.database_path))
+        restarted = DailyUsageLimiter(
+            str(self.limiter.database_path), retention_days=3650
+        )
         denied = restarted.acquire(42, 2, 0, now=102, usage_date="2026-09-26")
         self.assertFalse(denied.allowed)
         self.assertEqual(denied.reason, "daily_limit")
@@ -44,9 +48,12 @@ class DailyUsageLimiterTests(unittest.TestCase):
         self.assertTrue(retry.allowed)
 
     def test_deletes_expired_usage(self):
-        self.limiter.acquire(42, 1, 0, now=100, usage_date="2026-08-01")
-        self.limiter.delete_expired_usage(today=date(2026, 9, 26))
-        retry = self.limiter.acquire(42, 1, 0, now=101, usage_date="2026-08-01")
+        cleanup_limiter = DailyUsageLimiter(
+            str(self.limiter.database_path), retention_days=30
+        )
+        cleanup_limiter.acquire(42, 1, 0, now=100, usage_date="2026-08-01")
+        cleanup_limiter.delete_expired_usage(today=date(2026, 9, 26))
+        retry = cleanup_limiter.acquire(42, 1, 0, now=101, usage_date="2026-08-01")
         self.assertTrue(retry.allowed)
 
 

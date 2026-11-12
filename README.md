@@ -8,7 +8,7 @@ Keryx AI Lite is a Discord moderation, utility, and community-assistance bot. It
 - `/detain` removes selected access roles and applies the Prison role.
 - `/perms` grants the configured permissions role.
 - `/honeypot-warning` posts the public warning in the configured honeypot channel.
-- Direct messages to Keryx open private modmail channels for staff replies.
+- Direct messages to Keryx open one private modmail channel per member for staff replies; later DMs reuse that ticket.
 - Messages in the honeypot channel trigger an automatic ban, staff log, seven-day message cleanup, and best-effort appeal DM.
 - `/ask` provides concise Gemini answers in one dedicated channel with persistent daily quotas and per-user cooldowns.
 

@@ -1,11 +1,13 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+import asyncio
 import os
 from dotenv import load_dotenv
 
 from ai_providers import AIProviderError, create_ai_provider
 from keryx_ai import DailyUsageLimiter, split_discord_message
+from keryx_modmail import find_modmail_channel, modmail_topic
 
 # --- CONFIGURATION SECTION ---
 load_dotenv()
@@ -94,6 +96,7 @@ class Client(commands.Bot):
         await super().close()
 
 client = Client()
+modmail_locks: dict[int, asyncio.Lock] = {}
 
 @client.event
 async def on_ready():
@@ -449,30 +452,34 @@ async def on_message(message):
     # CASE 2: User sends a Direct Message to the bot
     if isinstance(message.channel, discord.DMChannel):
         staff_guild = client.get_guild(STAFF_GUILD_ID)
-        category = staff_guild.get_channel(MODMAIL_CATEGORY_ID)
-        if not category: 
+        if not staff_guild:
             return
 
-        # Format channel name to match Discord's standard (lowercase, hyphens)
-        channel_name = f"mail-{message.author.name.lower().replace(' ', '-')}"
-        mail_channel = discord.utils.get(category.text_channels, name=channel_name)
+        category = staff_guild.get_channel(MODMAIL_CATEGORY_ID)
+        if not isinstance(category, discord.CategoryChannel):
+            return
 
-        # Create the ticket channel if it doesn't exist
-        if not mail_channel:
-            mail_channel = await staff_guild.create_text_channel(
-                name=channel_name, 
-                category=category, 
-                topic=f"User ID: {message.author.id}"
-            )
-            await mail_channel.send(f"@here 📩 **New Ticket** opened by {message.author.mention}")
+        # Keep simultaneous DMs from creating duplicate tickets for the same user.
+        lock = modmail_locks.setdefault(message.author.id, asyncio.Lock())
+        async with lock:
+            # The topic stores a permanent user ID; names are not unique or stable.
+            mail_channel = find_modmail_channel(category.text_channels, message.author.id)
 
-        # Send the user's message as a clean embed
-        embed = discord.Embed(description=message.content, color=discord.Color.blue())
-        embed.set_author(name=message.author.display_name, icon_url=message.author.display_avatar.url)
-        if message.attachments: 
-            embed.set_image(url=message.attachments[0].url)
-        
-        await mail_channel.send(embed=embed)
+            if not mail_channel:
+                mail_channel = await staff_guild.create_text_channel(
+                    name=f"mail-{message.author.id}",
+                    category=category,
+                    topic=modmail_topic(message.author.id),
+                )
+                await mail_channel.send(f"@here 📩 **New Ticket** opened by {message.author.mention}")
+
+            # Send the user's message as a clean embed.
+            embed = discord.Embed(description=message.content, color=discord.Color.blue())
+            embed.set_author(name=message.author.display_name, icon_url=message.author.display_avatar.url)
+            if message.attachments:
+                embed.set_image(url=message.attachments[0].url)
+
+            await mail_channel.send(embed=embed)
         await message.add_reaction("✅") # Confirm to user it was sent
 
     # CASE 3: Staff replies inside the Modmail Category
